@@ -1,87 +1,96 @@
-document.addEventListener("DOMContentLoaded", function() {
-    const expenseForm = document.getElementById("expense-form");
-    const expenseTableBody = document.getElementById("expense-table-body");
-    const totalAnaSpan = document.getElementById("total-ana");
-    const totalBeliSpan = document.getElementById("total-beli");
-    const totalCamilaSpan = document.getElementById("total-camila");
-    const totalElisaSpan = document.getElementById("total-elisa");
+document.addEventListener('DOMContentLoaded', () => {
+    const expenseForm = document.getElementById('expense-form');
+    const expenseTableBody = document.getElementById('expense-table-body');
+    const totals = {
+        ana: 0,
+        beli: 0,
+        camila: 0,
+        elisa: 0
+    };
 
-    let totalAna = 0;
-    let totalBeli = 0;
-    let totalCamila = 0;
-    let totalElisa = 0;
+    const aluguel = parseFloat(document.getElementById('aluguel').textContent.replace(',', '.'));
+    const condominio = parseFloat(document.getElementById('condominio').textContent.replace(',', '.'));
+    const internet = parseFloat(document.getElementById('internet').textContent.replace(',', '.'));
 
-    expenseForm.addEventListener("submit", function(e) {
-        e.preventDefault();
+    const constantTotal = (aluguel + condominio + internet) / 4;
 
-        const expenseName = document.getElementById("expense-name").value;
-        const expenseAmount = parseFloat(document.getElementById("expense-amount").value);
-        const selectedRadio = document.querySelector("input[name='expense-owner']:checked");
-        const checkedBoxes = document.querySelectorAll("input[name='expense-owner']:checked");
+    // Adiciona os valores constantes aos totais iniciais
+    ['ana', 'beli', 'camila', 'elisa'].forEach(person => {
+        totals[person] = constantTotal;
+    });
 
-        if (!selectedRadio) {
-            alert("Selecione quem pagou!");
+    updateTotals();
+
+    expenseForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const expenseName = document.getElementById('expense-name').value;
+        let expenseAmount = document.getElementById('expense-amount').value;
+
+        // Substitui a vírgula por ponto e converte para float
+        expenseAmount = parseFloat(expenseAmount.replace(',', '.'));
+
+        const expenseOwner = document.querySelector('input[name="expense-owner"]:checked').value;
+        const participants = Array.from(document.querySelectorAll('input[name="expense-participant"]:checked')).map(input => input.value);
+
+        if (!expenseName || isNaN(expenseAmount) || !expenseOwner || participants.length === 0) {
+            alert('Por favor, preencha todos os campos corretamente.');
             return;
         }
 
-        const owner = selectedRadio.value;
-        const others = Array.from(checkedBoxes).map(cb => cb.value).filter(value => value !== owner);
-        const dividedAmount = (expenseAmount / others.length).toFixed(2);
+        const splitAmount = expenseAmount / participants.length;
 
-        const row = document.createElement("tr");
+        // Atualiza os totais de cada pessoa
+        participants.forEach(participant => {
+            totals[participant] += splitAmount;
+        });
 
-        row.innerHTML = `
-            <td>${expenseName}</td>
-            <td>${owner === 'ana' ? `-R$ ${expenseAmount.toFixed(2)}` : (others.includes('ana') ? `R$ ${dividedAmount}` : `R$ 0.00`)}</td>
-            <td>${owner === 'beli' ? `-R$ ${expenseAmount.toFixed(2)}` : (others.includes('beli') ? `R$ ${dividedAmount}` : `R$ 0.00`)}</td>
-            <td>${owner === 'camila' ? `-R$ ${expenseAmount.toFixed(2)}` : (others.includes('camila') ? `R$ ${dividedAmount}` : `R$ 0.00`)}</td>
-            <td>${owner === 'elisa' ? `-R$ ${expenseAmount.toFixed(2)}` : (others.includes('elisa') ? `R$ ${dividedAmount}` : `R$ 0.00`)}</td>
-            <td><button class="delete-button">Excluir</button></td>
-        `;
+        totals[expenseOwner] -= expenseAmount;
 
-        expenseTableBody.appendChild(row);
-
-        // Atualizar os totais
-        const totalDividedAmount = parseFloat(dividedAmount);
-
-        if (owner === 'ana') totalAna -= expenseAmount;
-        else totalAna += others.includes('ana') ? totalDividedAmount : 0;
-
-        if (owner === 'beli') totalBeli -= expenseAmount;
-        else totalBeli += others.includes('beli') ? totalDividedAmount : 0;
-
-        if (owner === 'camila') totalCamila -= expenseAmount;
-        else totalCamila += others.includes('camila') ? totalDividedAmount : 0;
-
-        if (owner === 'elisa') totalElisa -= expenseAmount;
-        else totalElisa += others.includes('elisa') ? totalDividedAmount : 0;
-
-        totalAnaSpan.textContent = totalAna.toFixed(2);
-        totalBeliSpan.textContent = totalBeli.toFixed(2);
-        totalCamilaSpan.textContent = totalCamila.toFixed(2);
-        totalElisaSpan.textContent = totalElisa.toFixed(2);
+        updateTotals();
+        addExpenseToTable(expenseName, expenseOwner, participants, expenseAmount);
 
         expenseForm.reset();
     });
 
-    expenseTableBody.addEventListener("click", function(e) {
-        if (e.target.classList.contains("delete-button")) {
-            const row = e.target.closest("tr");
-            const amountCells = row.querySelectorAll("td:nth-child(2), td:nth-child(3), td:nth-child(4), td:nth-child(5)");
-            const expenseAmounts = Array.from(amountCells).map(cell => parseFloat(cell.textContent.replace("R$ ", "").replace(",", ".")));
+    function updateTotals() {
+        document.getElementById('total-ana').textContent = formatCurrency(totals.ana);
+        document.getElementById('total-beli').textContent = formatCurrency(totals.beli);
+        document.getElementById('total-camila').textContent = formatCurrency(totals.camila);
+        document.getElementById('total-elisa').textContent = formatCurrency(totals.elisa);
+    }
 
-            // Subtrair os valores das colunas correspondentes
-            totalAna += expenseAmounts[0];
-            totalBeli += expenseAmounts[1];
-            totalCamila += expenseAmounts[2];
-            totalElisa += expenseAmounts[3];
+    function addExpenseToTable(name, owner, participants, amount) {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${name}</td>
+            <td>${participants.includes('ana') ? formatCurrency(amount / participants.length) : '-'}</td>
+            <td>${participants.includes('beli') ? formatCurrency(amount / participants.length) : '-'}</td>
+            <td>${participants.includes('camila') ? formatCurrency(amount / participants.length) : '-'}</td>
+            <td>${participants.includes('elisa') ? formatCurrency(amount / participants.length) : '-'}</td>
+            <td><button class="delete-expense">X</button></td>
+        `;
+        expenseTableBody.appendChild(row);
 
-            totalAnaSpan.textContent = totalAna.toFixed(2);
-            totalBeliSpan.textContent = totalBeli.toFixed(2);
-            totalCamilaSpan.textContent = totalCamila.toFixed(2);
-            totalElisaSpan.textContent = totalElisa.toFixed(2);
+        row.querySelector('.delete-expense').addEventListener('click', () => {
+            removeExpense(row, owner, participants, amount);
+        });
+    }
 
-            row.remove();
-        }
-    });
+    function removeExpense(row, owner, participants, amount) {
+        const splitAmount = amount / participants.length;
+
+        participants.forEach(participant => {
+            totals[participant] -= splitAmount;
+        });
+
+        totals[owner] += amount;
+
+        updateTotals();
+        row.remove();
+    }
+
+    function formatCurrency(value) {
+        return 'R$ ' + value.toFixed(2).replace('.', ',');
+    }
 });
