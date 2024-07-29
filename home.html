@@ -1,65 +1,113 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Planilha de Gastos Mensais</title>
     <link rel="stylesheet" href="styles/styleHome.css">
+    <link href='https://fonts.googleapis.com/css?family=Alata' rel='stylesheet'>
 </head>
 <body>
-    <h1>Planilha de Agosto</h1>
-    <h2>Referente aos gastos de Julho</h2>
-    <fieldset>
-        <legend>Quem pagou?</legend>
-        <br>
-        <label><input type="radio" name="expense-owner" value="ana"> Ana</label>
-        <label><input type="radio" name="expense-owner" value="beli"> Beli</label>
-        <label><input type="radio" name="expense-owner" value="camila"> Camila</label>
-        <label><input type="radio" name="expense-owner" value="elisa"> Elisa</label>
-        <br>
-        <br>
-    </fieldset>
+    <div class="title-box">
+        <h1>Planilha de Agosto</h1>
+        <h2>Referente ao gasto de Julho</h2>
+    </div>
     <br>
-    <fieldset>
-    <legend>Quem tá inclusa na divisão?</legend>
-        <br>
-        <label><input type="checkbox" name="expense-owner" value="ana"> Ana</label>
-        <label><input type="checkbox" name="expense-owner" value="beli"> Beli</label>
-        <label><input type="checkbox" name="expense-owner" value="camila"> Camila</label>
-        <label><input type="checkbox" name="expense-owner" value="elisa"> Elisa</label>
-        <br>
-        <br>
-        <b>OBS: não incluir aqui a pessoa que pagou!</b>
-    </fieldset>
-    <br>
-    <form id="expense-form">
-        <input type="text" id="expense-name" placeholder="Nome do Gasto" required>
-        <input type="number" id="expense-amount" placeholder="Valor" required step="0.01" min="0">
-        <button type="submit">Adicionar Gasto</button>
-    </form>
-    <table>
-        <thead>
+    <div class="content-box">
+        <div class="fieldsets-container">
+            <fieldset id="f1">
+                <legend>Quem pagou?</legend>
+                <label><input type="radio" name="expense-owner" value="ana"> Ana</label>
+                <label><input type="radio" name="expense-owner" value="beli"> Beli</label>
+                <label><input type="radio" name="expense-owner" value="camila"> Camila</label>
+                <label><input type="radio" name="expense-owner" value="elisa"> Elisa</label>
+            </fieldset>
+            <fieldset id="f2">
+                <legend>Quem tá inclusa?</legend>
+                <label><input type="checkbox" name="expense-participant" value="ana"> Ana</label>
+                <label><input type="checkbox" name="expense-participant" value="beli"> Beli</label>
+                <label><input type="checkbox" name="expense-participant" value="camila"> Camila</label>
+                <label><input type="checkbox" name="expense-participant" value="elisa"> Elisa</label>
+            </fieldset>
+            <fieldset id="f3">
+                <legend>Qual foi o gasto?</legend>
+                <form id="expense-form">
+                    <input type="text" id="expense-name" placeholder="Nome" required>
+                    <input type="text" id="expense-amount" placeholder="Valor" required>
+                    <button type="submit">Adicionar 💚</button>
+                </form>
+            </fieldset>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th><img src="imgs/ana.jpeg" alt="Ana"></th>
+                    <th><img src="imgs/beli.jpeg" alt="Beli"></th>
+                    <th><img src="imgs/camila.jpeg" alt="Camila"></th>
+                    <th><img src="imgs/elisa.jpeg" alt="Elisa"></th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody id="expense-table-body">
+                <!-- Gastos serão inseridos aqui -->
+            </tbody>
+        </table>
+        <table>
+            <thead>
+                <tr>
+                    <th>Aluguel e Seguro</th>
+                    <th>Condomínio</th>
+                    <th>Energia</th>
+                </tr>
+            </thead>
+            <tbody id="constant-expense-body">
+                <tr>
+                    <td>R$ <span id="aluguel">903,13</span></td>
+                    <td>R$ <span id="condominio">160,00</span></td>
+                    <td>R$ <span id="internet">78,54</span></td>
+                </tr>
+            </tbody>
+        </table>
+        <table>
+            <thead>
+                <tr>
+                    <th>Pagamento Geral</th>
+                    <th>Pagamento Internet</th>
+                </tr>
+            </thead>
+            <tbody id="constant-expense-body">
+                <tr>
+                    <td>Ana: <span id="total-ana">0</span></td>
+                    <td>Ana: R$ 30.00</td>
+                </tr>
+                <tr>
+                    <td>Beli: <span id="total-beli">0</span></td>
+                    <td>Beli: R$ 30.00</td>
+                </tr>
+                <tr>
+                    <td>Camila: <span id="total-camila">0</span></td>
+                    <td>Camila: R$ 30.00</td>
+                </tr>
+                <tr>
+                    <td>Elisa: <span id="total-elisa">0</span></td>
+                    <td>Elisa: R$ 30.00</td>
+                </tr>
+            </tbody>
+        </table>
+        <table>
+            <thead>
+                <tr>
+                    <th>PIX Geral</th>
+                    <th>PIX Internet</th>
+                </tr>
+            </thead>
             <tr>
-                <th>Descrição</th>
-                <th>Ana</th>
-                <th>Beli</th>
-                <th>Camila</th>
-                <th>Elisa</th>
-                <th>Ações</th>
+                <td>pix.para.aluguel@gmail.com</td>
+                <td>pix da beli</td>
             </tr>
-        </thead>
-        <tbody id="expense-table-body">
-            <!-- Gastos serão inseridos aqui -->
-        </tbody>
-    </table>
-    <br>
-    <h2>Valor total a pagar</h2>
-    <ul id="totals-list">
-        <li>Ana: R$ <span id="total-ana">0</span></li>
-        <li>Beli: R$ <span id="total-beli">0</span></li>
-        <li>Camila: R$ <span id="total-camila">0</span></li>
-        <li>Elisa: R$ <span id="total-elisa">0</span></li>
-    </ul>
+        </table>
+    </div>
     <script src="scripts/scriptHome.js"></script>
 </body>
 </html>
