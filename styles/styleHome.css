@@ -1,0 +1,181 @@
+/* CSS existente */
+body {
+    font-family: 'Alata';
+    margin: 0;
+    padding: 30px;
+    background-image: url('../imgs/background.jpeg');
+    background-size: cover;
+    background-position: center;
+}
+
+.title-box {
+    background-color: #70af53;
+    padding: 30px;
+    border: 2px solid #3a7920;
+    border-radius: 5px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    max-width: 1200px;
+    margin: auto;
+}
+
+.content-box {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    max-width: 1200px;
+    margin: auto;
+    overflow-x: auto;
+}
+
+h1, h2 {
+    text-align: center;
+    color: #084808;
+}
+
+.fieldsets-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+fieldset {
+    border: 2px solid #70af53;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #f8f8f8;
+    flex: 1;
+    box-sizing: border-box;
+}
+
+legend {
+    color: #3a7920;
+    font-weight: bold;
+}
+
+label {
+    display: block;
+    color: #333;
+}
+
+input[type="text"],
+input[type="number"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    width: calc(50% - 20px);
+    box-sizing: border-box;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #70af53;
+    color: #084808;
+    border: 2px solid #3a7920;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #3a7920;
+    color: #fff;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #fff;
+    color: #000;
+    table-layout: fixed;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+    word-wrap: break-word;
+}
+
+thead {
+    background-color: #70af53;
+    border: 2px solid #3a7920;
+    color: #084808;
+}
+
+thead th img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin-right: 10px;
+}
+
+tfoot {
+    background-color: #f2f2f2;
+}
+
+.delete-expense {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: none;
+    background-color: #70af53;
+    color: #fff;
+    font-size: 14px;
+    text-align: center;
+    line-height: 30px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.pix{
+    color: #084808;
+}
+
+/* CSS adicional para responsividade */
+@media (max-width: 768px) {
+    .fieldsets-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    fieldset {
+        margin: 5px 0;
+    }
+
+    table {
+        font-size: 0.8em;
+    }
+
+    th, td {
+        padding: 5px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+
+    .title-box, .content-box {
+        padding: 10px;
+    }
+
+    table {
+        font-size: 0.7em;
+    }
+
+    thead th img {
+        width: 40px;
+        height: 40px;
+    }
+
+    th, td {
+        padding: 5px;
+    }
+}
