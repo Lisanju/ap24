@@ -1,4 +1,26 @@
-document.addEventListener('DOMContentLoaded', () => {
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore";
+import { getAnalytics } from "firebase/analytics";
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyB54-JPIKrtcZn_EHN8yzduIkdpttZEQb8",
+  authDomain: "ap24-82825.firebaseapp.com",
+  databaseURL: "https://ap24-82825-default-rtdb.firebaseio.com",
+  projectId: "ap24-82825",
+  storageBucket: "ap24-82825.appspot.com",
+  messagingSenderId: "553997269558",
+  appId: "1:553997269558:web:01f33458878f20dc267697",
+  measurementId: "G-LNMQ3CTKJE"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const analytics = getAnalytics(app);
+
+document.addEventListener('DOMContentLoaded', async () => {
     const expenseForm = document.getElementById('expense-form');
     const expenseTableBody = document.getElementById('expense-table-body');
     const totals = {
@@ -21,7 +43,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     updateTotals();
 
-    expenseForm.addEventListener('submit', function(event) {
+    // Carrega as despesas do Firestore ao inicializar a página
+    await loadExpenses();
+
+    expenseForm.addEventListener('submit', async function(event) {
         event.preventDefault();
 
         const expenseName = document.getElementById('expense-name').value;
@@ -49,6 +74,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         updateTotals();
         addExpenseToTable(expenseName, expenseOwner, participants, expenseAmount);
+
+        // Adiciona a despesa ao Firestore
+        await addExpenseToFirestore(expenseName, expenseOwner, participants, expenseAmount);
 
         expenseForm.reset();
     });
@@ -92,5 +120,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function formatCurrency(value) {
         return 'R$ ' + value.toFixed(2).replace('.', ',');
+    }
+
+    async function addExpenseToFirestore(name, owner, participants, amount) {
+        try {
+            await addDoc(collection(db, "expenses"), {
+                name: name,
+                owner: owner,
+                participants: participants,
+                amount: amount
+            });
+            console.log("Documento adicionado ao Firestore.");
+        } catch (e) {
+            console.error("Erro ao adicionar documento: ", e);
+        }
+    }
+
+    async function loadExpenses() {
+        try {
+            const querySnapshot = await getDocs(collection(db, "expenses"));
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                addExpenseToTable(data.name, data.owner, data.participants, data.amount);
+
+                const splitAmount = data.amount / data.participants.length;
+                data.participants.forEach(participant => {
+                    totals[participant] += splitAmount;
+                });
+
+                totals[data.owner] -= data.amount;
+                updateTotals();
+            });
+        } catch (e) {
+            console.error("Erro ao carregar documentos: ", e);
+        }
     }
 });
