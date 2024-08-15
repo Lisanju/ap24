@@ -12,15 +12,12 @@ document.addEventListener("DOMContentLoaded", function() {
     let totalBeli = 0;
     let totalCamila = 0;
     let totalElisa = 0;
-
-    document.addEventListener("DOMContentLoaded", function() {
-        loadTableData(); // Carrega os dados do Cloud Storage
-    });
+    
+    loadTableData();
 
     function saveTableData() {
-        const expenseTableBody = document.getElementById("expense-table-body");
         const rows = expenseTableBody.querySelectorAll("tr");
-        let csvContent = "data:text/csv;charset=utf-8,";
+        let csvContent = "";
 
         rows.forEach(row => {
             let rowData = [];
@@ -32,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         const storageRef = ref(storage, 'expense_data.csv');
 
-        uploadString(storageRef, csvContent, 'data_url')
+        uploadString(storageRef, csvContent, 'raw')
             .then(() => {
                 console.log("Dados salvos no Cloud Storage!");
             })
@@ -47,7 +44,12 @@ document.addEventListener("DOMContentLoaded", function() {
         getDownloadURL(storageRef)
             .then((url) => {
                 fetch(url)
-                    .then(response => response.text())
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.text();
+                    })
                     .then(csvText => {
                         populateTable(csvText);
                     })
@@ -61,7 +63,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function populateTable(csvText) {
-        const expenseTableBody = document.getElementById("expense-table-body");
+        expenseTableBody.innerHTML = ""; // Limpa a tabela antes de preencher com os dados carregados
         const rows = csvText.split("\n");
 
         rows.forEach(row => {
@@ -108,8 +110,6 @@ document.addEventListener("DOMContentLoaded", function() {
     function handleExpenseFormSubmit(e) {
         e.preventDefault();
 
-        saveTableData();
-
         const expenseName = document.getElementById("expense-name").value;
         const expenseAmount = parseFloat(document.getElementById("expense-amount").value.replace(',', '.'));
         const selectedRadio = document.querySelector("input[name='expense-owner']:checked");
@@ -152,6 +152,7 @@ document.addEventListener("DOMContentLoaded", function() {
         totalCamilaSpan.textContent = totalCamila.toFixed(2);
         totalElisaSpan.textContent = totalElisa.toFixed(2);
 
+        saveTableData(); // Salva os dados após adicionar uma nova linha
         expenseForm.reset();
     }
 
@@ -182,7 +183,7 @@ document.addEventListener("DOMContentLoaded", function() {
             totalElisaSpan.textContent = totalElisa.toFixed(2);
 
             row.remove();
-            saveTableData();
+            saveTableData(); // Atualiza o Cloud Storage após a remoção da linha
         }
     }
 
